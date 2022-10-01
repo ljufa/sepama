@@ -1,0 +1,7 @@
+[workspace]
+members = [
+    "api_models",
+    "backend",
+    
+]
+exclude = ["web_ui", "deployment"]

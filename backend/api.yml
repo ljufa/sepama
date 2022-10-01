@@ -1,0 +1,413 @@
+openapi: 3.0.3
+info:
+  title: sepa backend
+  description: sepa backend
+  version: 1.0.0
+servers:
+  - url: 'localhost:8080/api'
+tags:
+  - name: bank-account
+    description: Bank accounts related APIs
+  - name: profile
+    description: User profile related APIs
+  - name: mandate
+    description: Mandate related APIs
+  - name: creditor
+    description: Creditor related APIs
+paths:
+  "/mandates":
+    get:
+      description: Returns all mandates
+      operationId: getMandates
+      tags: [ mandate ]
+      responses:
+        200:
+          description: Existing mandates
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Mandate"
+                example:
+                  - id: "1"
+                    displayName: Internet & Cable TV
+                    uniqueReference: cred123x
+                    debtorBankAccount:
+                      id: "1"
+                      iban: DE12390987234874234
+                      institution: N26
+                      bic: NTX9123
+                    dateCreated: 2021-12-02
+                    status: ACTIVE
+                    creditor:
+                      id: "1"
+                      name: Vodafone
+                      sepaIdentifier: VodafDE10001
+                      address:
+                        street: Kant str
+                        houseNumber: "100"
+                        zip: "14022"
+                        place: Berlin
+                  - id: "2"
+                    displayName: Electricity
+                    uniqueReference: contractNo_909821
+                    debtorBankAccount:
+                      id: "2"
+                      iban: DE12121212121212123
+                      institution: DKB
+                      bic: xxiid2
+
+                    dateCreated: 2020-12-02
+                    status: ACTIVE
+                    creditor:
+                      name: Watenfall
+                      sepaIdentifier: WTF91231
+                      address:
+                        street: Bismarckstraße
+                        houseNumber: "35"
+                        zip: "10622"
+                        place: Berlin
+    post:
+      description: Creates or updates mandate
+      operationId: createOrUpdateMandate
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateOrUpdateMandate"
+      responses:
+        200:
+          description: todo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Mandate'
+              example:
+                id: "3"
+                displayName: Rent
+                uniqueReference: contractNo_002319
+                debtorBankAccount:
+                  id: "2"
+                  institution: "N26"
+                  iban: "DE21100101231235234444"
+                  bic: "10010123"
+                dateCreated: 2020-12-02
+                status: ACTIVE
+                creditor:
+                  name: Akelius
+                  sepaIdentifier: AKA0091
+                  address:
+                    street: Pariser Platz
+                    houseNumber: "1"
+                    zip: "10117"
+                    place: Berlin
+        404:
+          description: In case that the mandate with the provided id doesn't exist
+      tags: [ mandate ]
+  "/mandates/{mandateId}/pdf":
+    get:
+      description: Generates a mandate cancelation pdf in users preferred language (or in english, if not available)
+      operationId: mandateCancelationPdf
+      parameters:
+        - in: path
+          name: mandateId
+          required: true
+          schema:
+            type: string
+            format: uuid
+      tags: [ mandate ]
+      responses:
+        200:
+          description: PDF
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+  "/creditors":
+    get:
+      description: Return all existing user's creditors
+      operationId: getAllCreditors
+      tags: [ creditor ]
+      responses:
+        200:
+          description: All creditors
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Creditor"
+    post:
+      description: Creates (if id of the creditor is not provided in the request) or updates the creditor (in case creditor with given id exists, otherwise returning 404)
+      operationId: createOrUpdateCreditor
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateUpdateCreditor"
+      tags: [ creditor ]
+      responses:
+        200:
+          description: Successfully created / updated creditor
+        404:
+          description: If id provided in the request body doesn't exist
+  "/creditors/{creditorId}":
+    delete:
+      description: Deletes signified creditor
+      operationId: deleteCreditor
+      parameters:
+        - name: creditorId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      tags: [ creditor ]
+      responses:
+        200:
+          description: Creditor deleted
+        404:
+          description: No such creditor
+  "/bank-accounts":
+    post:
+      description: Creates (if id not provided) or updates (if id provided) an existing bank account. In case of bank account with given id not exists, 404 is returned
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateUpdateBankAccount"
+      tags: [ bank-account ]
+      responses:
+        200:
+          description: todo
+        404:
+          description: Bank account with the provided id doesn't exist
+    get:
+      description: todo
+      tags: [ bank-account ]
+      responses:
+        200:
+          description: todo
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/BankAccount"
+                example:
+                  - id: "1"
+                    iban: DE12390987234874234
+                    institution: N26
+                    bic: NTX9123
+                  - id: "2"
+                    iban: DE12121212121212123
+                    institution: DKB
+                    bic: xxiid2
+
+
+  "/bank-accounts/{bankAccountId}":
+    delete:
+      description: todo
+      parameters:
+        - name: bankAccountId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      tags: [ bank-account ]
+      responses:
+        204:
+          description: todo
+  "/profile":
+    head:
+      tags: [ profile ]
+      responses:
+        200:
+          description: profile exists
+        404:
+          description: profile doesn't exist
+    post:
+      description: Set user profile
+      operationId: setUserProfile
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserProfile"
+      tags: [ profile ]
+      responses:
+        200:
+          description: Profile successfully set
+    get:
+      description: User's profile
+      operationId: getUserProfile
+      tags: [ profile ]
+      responses:
+        200:
+          description: User's profile
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserProfile"
+components:
+  schemas:
+    BaseCreditor:
+      type: object
+      required:
+        - name
+        - sepaIdentifier
+      properties:
+        name:
+          type: string
+        sepaIdentifier:
+          type: string
+        address:
+          $ref: "#/components/schemas/Address"
+    Creditor:
+      type: object
+      allOf:
+        - $ref: "#/components/schemas/BaseCreditor"
+      required:
+        - id
+      properties:
+        id:
+          type: string
+          format: uuid
+    CreateUpdateCreditor:
+      type: object
+      allOf:
+        - $ref: "#/components/schemas/BaseCreditor"
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: If provided, it will be considered replacing the existing creditor with the provided one
+    Status:
+      type: string
+      enum:
+        - ACTIVE
+        - DELETED
+        - CANCELED
+    BaseMandate:
+      type: object
+      properties:
+        status:
+          $ref: "#/components/schemas/Status"
+        uniqueReference:
+          type: string
+        displayName:
+          type: string
+        tags:
+          items:
+            type: string
+    CreateOrUpdateMandate:
+      type: object
+      allOf:
+        - $ref: "#/components/schemas/BaseMandate"
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: id of a mandate. If present, it will be considered as update of an existing mandate
+        creditor:
+          type: object
+          allOf:
+            - $ref: "#/components/schemas/BaseCreditor"
+          properties:
+            id:
+              type: string
+              format: uuid
+              description: id of a creditor. If present, it will be considered as update of an existing creditor
+        debtorBankAccount:
+          type: object
+          allOf:
+            - $ref: "#/components/schemas/BaseBankAccount"
+          properties:
+            id:
+              type: string
+              format: uuid
+              description: id of a debtor bank account. If present, it will be considered as update of an existing debtor bank account
+    Mandate:
+      type: object
+      allOf:
+        - $ref: "#/components/schemas/BaseMandate"
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique mandate identifier
+        dateCreated:
+          type: string
+          format: date-time
+        creditor:
+          $ref: "#/components/schemas/Creditor"
+        debtorBankAccount:
+          $ref: "#/components/schemas/BankAccount"
+    UserProfile:
+      type: object
+      required:
+        - firstName
+        - lastName
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+        address:
+          $ref: "#/components/schemas/Address"
+        dateOfBirth:
+          type: string
+          format: date
+        preferredLanguage:
+          type: string
+          description: As described in [Accept-Language#examples](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Accept-Language#examples)
+    BaseBankAccount:
+      required:
+        - institution
+        - iban
+      properties:
+        institution:
+          type: string
+        iban:
+          type: string
+        bic:
+          type: string
+    BankAccount:
+      type: object
+      allOf:
+        - $ref: "#/components/schemas/BaseBankAccount"
+      required:
+        - id
+      properties:
+        id:
+          type: string
+          format: uuid
+    CreateUpdateBankAccount:
+      type: object
+      allOf:
+        - $ref: "#/components/schemas/BaseBankAccount"
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier of the bank account
+    Address:
+      required:
+        - street
+        - houseNumber
+        - zip
+        - place
+      properties:
+        street:
+          type: string
+        houseNumber:
+          type: string
+        zip:
+          type: string
+        place:
+          type: string
+

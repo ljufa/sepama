@@ -1,0 +1,16 @@
+name: Rust
+
+on:
+  push:
+    branches: [ master, dev-server ]
+
+jobs:
+  
+  reinstall:
+    name: Trigger all app re-install
+    runs-on: ubuntu-latest
+    steps:
+    - name: Call endpoint
+      uses: wei/curl@master
+      with:
+        args: -v -u '${{secrets.DEPLOY_SERVER_AUTH}}' https://deploy-server.sepama.freemyip.com/install

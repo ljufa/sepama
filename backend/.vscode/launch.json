@@ -1,0 +1,125 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Cargo test api_models",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--lib",
+                    "--package",
+                    "api_models"
+                ]
+            },
+            "program": "${cargo:program}",
+            "args": []
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug executable 'mysepa-backend'",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--bin=mysepa-backend",
+                    "--package=mysepa-backend"
+                ],
+                "filter": {
+                    "name": "mysepa-backend",
+                    "kind": "bin"
+                }
+            },
+            "args": [],
+            "env": {
+                "RUST_LOG": "debug",
+                "AUTHORITY": "https://dev-i-l2f2pc.eu.auth0.com/"
+            },
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug unit tests in library 'mysepa-backend'",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--lib",
+                    "--package=mysepa-backend"
+                ],
+                "filter": {
+                    "name": "mysepa-backend",
+                    "kind": "lib"
+                },
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug unit tests in executable 'mysepa-backend'",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--bin=mysepa-backend",
+                    "--package=mysepa-backend"
+                ],
+                "filter": {
+                    "name": "mysepa-backend",
+                    "kind": "bin"
+                }
+            },
+            "env": {
+                "RUST_LOG": "debug",
+            },
+            "envFile": ".env",
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug executable 'show_bank_accounts'",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--bin=show_bank_accounts",
+                    "--package=mysepa-backend"
+                ],
+                "filter": {
+                    "name": "show_bank_accounts",
+                    "kind": "bin"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug unit tests in executable 'show_bank_accounts'",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--bin=show_bank_accounts",
+                    "--package=mysepa-backend"
+                ],
+                "filter": {
+                    "name": "show_bank_accounts",
+                    "kind": "bin"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        }
+    ]
+}

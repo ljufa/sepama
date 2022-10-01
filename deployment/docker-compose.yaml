@@ -1,0 +1,62 @@
+version: "3"
+services:
+
+  postgres:
+    image: postgres:latest
+    container_name: postgres
+    restart: unless-stopped
+    expose:
+      - "5432"
+    ports:
+      - "127.0.0.1:5432:5432"
+    environment:
+      - POSTGRES_PASSWORD=sepa
+      - POSTGRES_USER=sepa
+      - POSTGRES_DB=sepa
+      - PGDATA=/var/lib/postgresql/data/pgdata
+    volumes:
+      - 'postgresql_data:/var/lib/postgresql/data'
+
+  web-ui:
+   image: sepama/mysepa-web-ui:latest
+   container_name: web-ui
+   restart: unless-stopped
+   depends_on: 
+     - backend
+   expose:
+    - "80"
+   labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.web-ui.rule=Host(`sepama.freemyip.com`)"
+      - "traefik.http.routers.web-ui.entrypoints=websecure"
+      - "traefik.http.routers.web-ui.tls.certresolver=sepadnschallenge"
+      - "traefik.http.services.web-ui.loadbalancer.server.port=80"
+  
+  backend:
+   image: sepama/mysepa-backend:latest
+   container_name: backend
+   restart: unless-stopped
+   depends_on: 
+      - postgres
+   environment:
+      - SERVER_BIND_ADDRESS=0.0.0.0:8080
+      - AUTHORITY=https://dev-i-l2f2pc.eu.auth0.com/
+      - DATABASE_URL=postgres://sepa:sepa@postgres/sepa
+      - ALLOWED_ORIGIN=https://sepama.freemyip.com
+      - RUST_LOG=debug
+   expose:
+    - "8080"
+   labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.backend.rule=Host(`sepama.freemyip.com`) && PathPrefix(`/api`)"
+      - "traefik.http.routers.backend.entrypoints=websecure"
+      - "traefik.http.routers.backend.tls.certresolver=sepadnschallenge"
+      - "traefik.http.services.backend.loadbalancer.server.port=8080"
+
+networks: 
+  default: 
+    external: 
+      name: proxy
+volumes:
+  postgresql_data:
+    driver: local

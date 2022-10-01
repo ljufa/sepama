@@ -1,0 +1,12 @@
+pub mod address;
+pub use self::address::Address;
+pub mod bank_account;
+pub use self::bank_account::BankAccount;
+pub mod creditor;
+pub use self::creditor::Creditor;
+pub mod mandate;
+pub use self::mandate::Mandate;
+pub mod status;
+pub use self::status::Status;
+pub mod user_profile;
+pub use self::user_profile::UserProfile;
