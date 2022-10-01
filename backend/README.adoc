@@ -1,4 +1,4 @@
-# my-sepa
+# sepama
 
 ## Run locally
 
