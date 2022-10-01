@@ -240,7 +240,7 @@ fn view_brand_and_hamburger(menu_visible: bool, base_url: &Url) -> Node<Msg> {
         a![
             C!["navbar-item", "has-text-weight-bold", "is-size-3"],
             attrs! {At::Href => Urls::new(base_url).home()},
-            "MySepa"
+            "SEPAMAMAMAMA"
         ],
         // ------ Hamburger ------
         a![

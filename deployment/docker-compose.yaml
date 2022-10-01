@@ -18,11 +18,13 @@ services:
       - 'postgresql_data:/var/lib/postgresql/data'
 
   web-ui:
-   image: sepama/mysepa-web-ui:latest
+   image: ljufa/sepama-web-ui:latest
    container_name: web-ui
    restart: unless-stopped
    depends_on: 
      - backend
+   ports:
+     - 8000:80
    expose:
     - "80"
    labels:
@@ -33,7 +35,7 @@ services:
       - "traefik.http.services.web-ui.loadbalancer.server.port=80"
   
   backend:
-   image: sepama/mysepa-backend:latest
+   image: ljufa/sepama-backend:latest
    container_name: backend
    restart: unless-stopped
    depends_on: 

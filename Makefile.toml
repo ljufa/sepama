@@ -1,0 +1,87 @@
+[config]
+default_to_workspace = false
+
+# ---- BUILD ----
+
+[tasks.webui_build]
+cwd = "web_ui"
+description = "Build with wasm-pack"
+install_crate = { crate_name = "wasm-pack", binary = "wasm-pack", test_arg = "-V" }
+env = { "RUSTFLAGS" = "--cfg=local" }
+command = "wasm-pack"
+args = [
+    "build",
+    "--target",
+    "web",
+    "--out-dir",
+    "web/pkg",
+    "--out-name",
+    "package",
+    "--dev",
+]
+
+[tasks.webui_build_release]
+cwd = "web_ui"
+description = "Build with wasm-pack in release mode"
+install_crate = { crate_name = "wasm-pack", binary = "wasm-pack", test_arg = "-V" }
+command = "wasm-pack"
+args = [
+    "build",
+    "--target",
+    "web",
+    "--out-dir",
+    "web/pkg",
+    "--out-name",
+    "package",
+]
+
+# ---- DOCKER ----
+[tasks.webui_docker_build_image]
+description = "Build docker image localy"
+command = "docker"
+args = [
+    "build",
+    ".",
+    "-f",
+    "deployment/Dockerfile.webui",
+    "-t",
+    "ljufa/sepama-web-ui:latest",
+]
+
+
+[tasks.backend_build_release]
+description = "Build backend in release mode"
+command = "cargo"
+args = ["build", "--release"]
+
+
+[tasks.backend_docker_build_image]
+description = "Build docker image localy"
+command = "docker"
+args = [
+    "build",
+    ".",
+    "-f",
+    "deployment/Dockerfile.backend",
+    "-t",
+    "ljufa/sepama-backend:latest",
+]
+[tasks.re_create_containers]
+description = "Re-create docker containers with `latest` images using docker-compose"
+command = "docker-compose"
+args = [
+    "-f",
+    "deployment/docker-compose.yaml",
+    "up",
+    "-d",
+    # , "--force-recreate"
+]
+
+[tasks.redeploy]
+dependencies = [
+    "backend_build_release",
+    "webui_build_release",
+    "backend_docker_build_image",
+    "webui_docker_build_image",
+    "re_create_containers",
+]
