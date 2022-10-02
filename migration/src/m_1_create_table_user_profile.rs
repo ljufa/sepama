@@ -1,5 +1,6 @@
-use entity::{sea_orm::Statement, user_profile::*};
-use sea_schema::migration::prelude::*;
+use entity::{ user_profile::*};
+use sea_orm::{ConnectionTrait, DbErr, Statement};
+use sea_orm_migration::prelude::*;
 
 pub struct Migration;
 

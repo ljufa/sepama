@@ -1,5 +1,7 @@
-use entity::{mandate::*, sea_orm::Statement};
-use sea_schema::migration::prelude::*;
+use entity::mandate::*;
+use sea_orm_migration::prelude::*;
+use sea_orm::{ConnectionTrait, DbErr, Statement};
+
 
 pub struct Migration;
 

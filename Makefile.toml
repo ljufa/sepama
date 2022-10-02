@@ -35,7 +35,21 @@ args = [
     "package",
 ]
 
-# ---- DOCKER ----
+[tasks.backend_build_release]
+description = "Build backend in release mode"
+command = "cargo"
+args = ["build", "--release", "-p", "backend"]
+
+# ---- Build/Run on local machine ---- #
+[task.backend_run_local]
+env = ""
+description = "Run backend on server"
+command = "cargo"
+args = ["run", "-p", "backend"]
+
+
+# ---- Build/deploy on server ---- #
+
 [tasks.webui_docker_build_image]
 description = "Build docker image localy"
 command = "docker"
@@ -47,13 +61,6 @@ args = [
     "-t",
     "ljufa/sepama-web-ui:latest",
 ]
-
-
-[tasks.backend_build_release]
-description = "Build backend in release mode"
-command = "cargo"
-args = ["build", "--release"]
-
 
 [tasks.backend_docker_build_image]
 description = "Build docker image localy"

@@ -1,4 +1,4 @@
-pub use sea_schema::migration::prelude::*;
+pub use sea_orm_migration::prelude::*;
 
 mod m_1_create_table_user_profile;
 mod m_2_create_table_mandate;

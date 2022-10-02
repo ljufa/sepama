@@ -5,7 +5,9 @@ use actix_web::{guard, App, Error, HttpServer};
 use actix_web_httpauth::extractors::bearer::{BearerAuth, Config};
 use actix_web_httpauth::extractors::AuthenticationError;
 use actix_web_httpauth::middleware::HttpAuthentication;
+// use migration::Migrator;
 use migration::{Migrator, MigratorTrait};
+
 use std::env;
 
 use dotenv::dotenv;
@@ -19,8 +21,10 @@ async fn main() -> std::io::Result<()> {
     std::env::set_var("RUST_LOG", "info");
     env_logger::init();
     let database_url = env::var("DATABASE_URL").expect("DATABASE_URL must be set");
-    let address = std::env::var("SERVER_BIND_ADDRESS").unwrap_or("127.0.0.1:8080".to_string());
-    let allowed_cors_origin = env::var("ALLOWED_ORIGIN").unwrap_or("http://localhost:8000".into());
+    let address =
+        std::env::var("SERVER_BIND_ADDRESS").unwrap_or_else(|_| "127.0.0.1:8080".to_string());
+    let allowed_cors_origin =
+        env::var("ALLOWED_ORIGIN").unwrap_or_else(|_| "http://localhost:8000".into());
 
     let conn = sea_orm::Database::connect(&database_url).await.unwrap();
     Migrator::up(&conn, None).await.unwrap();
@@ -70,11 +74,7 @@ async fn main() -> std::io::Result<()> {
 }
 
 async fn validator(req: ServiceRequest, credentials: BearerAuth) -> Result<ServiceRequest, Error> {
-    let config = req
-        .app_data::<Config>()
-        .map(|data| data.clone())
-        .unwrap_or_else(Default::default);
-
+    let config = req.app_data::<Config>().cloned().unwrap_or_default();
     match auth::get_token_data(credentials.token()).await {
         Ok(_) => Ok(req),
         Err(_) => Err(AuthenticationError::from(config).into()),
