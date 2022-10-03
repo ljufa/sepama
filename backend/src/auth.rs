@@ -1,5 +1,4 @@
 use crate::errors::ServiceError;
-use actix_web::client::Client;
 use jsonwebtoken::jwk::{AlgorithmParameters, JwkSet};
 use jsonwebtoken::{decode, decode_header, DecodingKey, TokenData, Validation};
 use serde_json;
@@ -37,18 +36,18 @@ pub async fn get_token_data(
                 let decoded_token =
                     decode::<HashMap<String, serde_json::Value>>(token, &decoding_key, &validation)
                         .unwrap();
-                return Ok(decoded_token);
+                Ok(decoded_token)
             }
             _ => unreachable!("this should be a RSA"),
         }
     } else {
-        return Err(ServiceError::JWKSFetchError);
+        Err(ServiceError::JWKSFetchError)
     }
 }
 
 async fn fetch_jwks(uri: &str) -> Result<JwkSet, Box<dyn Error>> {
-    let client = Client::default();
+    let client = awc::Client::default();
     let mut res = client.get(uri).send().await?;
     let val = res.json::<JwkSet>().await?;
-    return Ok(val);
+    Ok(val)
 }

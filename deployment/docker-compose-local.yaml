@@ -1,0 +1,20 @@
+version: "3"
+services:
+
+  postgres_local:
+    image: postgres:latest
+    container_name: postgres_local_dev
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_PASSWORD=sepa
+      - POSTGRES_USER=sepa
+      - POSTGRES_DB=sepa
+      - PGDATA=/var/lib/postgresql/data/pgdata
+    volumes:
+      - 'postgresql_data_local:/var/lib/postgresql/data'
+
+volumes:
+  postgresql_data_local:
+    driver: local

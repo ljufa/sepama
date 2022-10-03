@@ -3,18 +3,8 @@ use seed::{prelude::*, *};
 
 use crate::{User, AuthError};
 
-
-
-#[cfg(not(local))]
 const API_URL_MANDATES: &str = "/api/mandates";
-#[cfg(not(local))]
 const API_URL_PROFILE: &str = "/api/profile";
-
-
-#[cfg(local)]
-const API_URL_MANDATES: &str = "http://localhost:8080/api/mandates";
-#[cfg(local)]
-const API_URL_PROFILE: &str = "http://localhost:8080/api/profile";
 
 // ------ ------
 //     API calls
@@ -111,7 +101,7 @@ pub async fn get_user_profile() -> fetch::Result<UserProfile> {
 
 
 pub async fn request_mandates() -> fetch::Result<Vec<Mandate>> {
-    return match getTokenSilently().await {
+    match getTokenSilently().await {
         Ok(token) => {
             Request::new(API_URL_MANDATES)
                 .method(Method::Get)
@@ -125,11 +115,11 @@ pub async fn request_mandates() -> fetch::Result<Vec<Mandate>> {
                 .await
         }
         Err(err) => Err(fetch::FetchError::NetworkError(err)),
-    };
+    }
 }
 
 pub async fn save_selected_mandate(mandate: Mandate) -> fetch::Result<Response> {
-    return match getTokenSilently().await {
+    match getTokenSilently().await {
         Ok(token) => Request::new(API_URL_MANDATES)
             .method(Method::Post)
             .header(Header::custom("Accept", "application/json"))
@@ -140,5 +130,5 @@ pub async fn save_selected_mandate(mandate: Mandate) -> fetch::Result<Response> 
             .await?
             .check_status(),
         Err(err) => Err(fetch::FetchError::NetworkError(err)),
-    };
+    }
 }
