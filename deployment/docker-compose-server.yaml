@@ -25,7 +25,7 @@ services:
       - postgres
    environment:
       - SERVER_BIND_ADDRESS=0.0.0.0:8080
-      - AUTHORITY=https://dev-i-l2f2pc.eu.auth0.com/
+      - AUTHORITY=https://dev-jecc6018.us.auth0.com/
       - DATABASE_URL=postgres://sepa:sepa@postgres/sepa
       - ALLOWED_ORIGIN=https://sepama.freemyip.com
       - STATIC_FILES_DIR=/opt/sepama

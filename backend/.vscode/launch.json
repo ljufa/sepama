@@ -38,7 +38,7 @@
             "args": [],
             "env": {
                 "RUST_LOG": "debug",
-                "AUTHORITY": "https://dev-i-l2f2pc.eu.auth0.com/"
+                "AUTHORITY": "https://dev-jecc6018.us.auth0.com/"
             },
             "cwd": "${workspaceFolder}"
         },

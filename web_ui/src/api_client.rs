@@ -41,9 +41,9 @@ pub async fn get_token() -> fetch::Result<String> {
 }
 
 pub async fn get_auth_user() -> Result<User, AuthError> {
-    let domain = String::from("dev-i-l2f2pc.eu.auth0.com");
-    let client_id = String::from("P1wEshlqr9kmr8C8WcJJ6aMmZ3ADFkrn");
-    let audience = String::from("http://mysepa-backend/api");   
+    let domain = String::from("dev-jecc6018.us.auth0.com");
+    let client_id = String::from("1FE1XMCrbIeY80inOYaq3QLJDbGE26BW");
+    let audience = String::from("http://mysepa-backend");   
     let js_user = init_auth(domain, client_id, audience).await;
     log!("Auth JSValue {}", js_user);
     if js_user.is_err() {

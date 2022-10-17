@@ -75,6 +75,7 @@ pub enum Msg {
 // ------ ------
 
 pub fn init(_url: Url, orders: &mut impl Orders<Msg>) -> Model {
+    log!("Init manage");
     orders.perform_cmd(async { Msg::MandatesFetched(api_client::request_mandates().await) });
     Model {
         mandates: Vec::new(),
@@ -88,6 +89,7 @@ pub fn init(_url: Url, orders: &mut impl Orders<Msg>) -> Model {
 //     Update
 // ------ ------
 pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
+    log!("Update manage", msg);
     match msg {
         Msg::MandatesFetched(result) => {
             model.remote_call_in_progress = false;

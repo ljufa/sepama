@@ -1,4 +1,3 @@
 **
 !target/release/backend
-!deployment/nginx.conf
 !web_ui/web

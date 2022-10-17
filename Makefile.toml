@@ -45,7 +45,7 @@ args = ["-f", "deployment/docker-compose-local.yaml", "up", "-d"]
 
 [tasks.backend_run_local]
 dependencies = ["create_local_env"]
-env = { "RUST_LOG" = "debug", "DATABASE_URL" = "postgres://sepa:sepa@localhost/sepa", "AUTHORITY" = "https://dev-i-l2f2pc.eu.auth0.com/", "RUST_BACKTRACE" = "full" }
+env = { "RUST_LOG" = "debug", "DATABASE_URL" = "postgres://sepa:sepa@localhost/sepa", "AUTHORITY" = "https://dev-jecc6018.us.auth0.com/", "RUST_BACKTRACE" = "full" }
 description = "Run backend on server"
 command = "cargo"
 args = ["run", "-p", "backend"]

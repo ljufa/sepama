@@ -5,8 +5,8 @@ use seed::{prelude::*, *};
 use serde::{Deserialize, Serialize};
 use strum_macros::Display;
 
-mod page;
 mod api_client;
+mod page;
 
 const SEPA_MANAGEMENT: &str = "manage";
 const USER_PROFILE: &str = "user-profile";
@@ -44,14 +44,22 @@ enum Page {
 }
 
 impl Page {
-    fn init(mut url: Url, orders: &mut impl Orders<Msg>) -> Self {
-        match url.remaining_path_parts().as_slice() {
-            [] => Self::Home,
-            [SEPA_MANAGEMENT] => Self::SepaManagement(page::sepa_management::init(
+    fn init(url: Url, orders: &mut impl Orders<Msg>) -> Self {
+        let slice = url.hash().map_or("", |p| {
+            if p.contains('#') {
+                p.split_once('#').unwrap().0
+            } else {
+                p.as_str()
+            }
+        });
+        log!("Slice", slice);
+        match slice {
+            "" => Self::Home,
+            SEPA_MANAGEMENT => Self::SepaManagement(page::sepa_management::init(
                 url,
                 &mut orders.proxy(Msg::SepaManagement),
             )),
-            [USER_PROFILE] => Self::UserProfile(page::user_profile::init(
+            USER_PROFILE => Self::UserProfile(page::user_profile::init(
                 url,
                 &mut orders.proxy(Msg::UserProfile),
             )),
@@ -89,10 +97,16 @@ pub enum AuthError {
 //     Init
 // ------ ------
 fn init(url: Url, orders: &mut impl Orders<Msg>) -> Model {
+    // orders
+    // .subscribe(Msg::UrlChanged)
+    // .notify(subs::UrlChanged(url.clone()));
+
     orders
         .subscribe(Msg::UrlChanged)
         .stream(streams::window_event(Ev::Click, |_| Msg::HideMenu))
+        .notify(subs::UrlChanged(url.clone()))
         .perform_cmd(async { Msg::AuthInitFinished(api_client::get_auth_user().await) });
+
     Model {
         user: None,
         base_url: url.to_base_url(),
@@ -121,7 +135,9 @@ fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
         Msg::AuthInitFinished(Ok(user)) => {
             model.user = Some(user);
             model.remote_call_in_progress = true;
-            orders.perform_cmd(async { Msg::IsProfileExistsFetched(api_client::is_profile_created().await) });
+            orders.perform_cmd(async {
+                Msg::IsProfileExistsFetched(api_client::is_profile_created().await)
+            });
             let search = model.base_url.search_mut();
             if search.remove("code").is_some() && search.remove("state").is_some() {
                 model.base_url.go_and_replace();
@@ -132,10 +148,14 @@ fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
         }
 
         Msg::SignUp => {
-            orders.perform_cmd(async { Msg::RedirectingToSignUp(api_client::redirect_to_sign_up().await) });
+            orders.perform_cmd(async {
+                Msg::RedirectingToSignUp(api_client::redirect_to_sign_up().await)
+            });
         }
         Msg::LogIn => {
-            orders.perform_cmd(async { Msg::RedirectingToLogIn(api_client::redirect_to_log_in().await) });
+            orders.perform_cmd(async {
+                Msg::RedirectingToLogIn(api_client::redirect_to_log_in().await)
+            });
         }
         Msg::RedirectingToSignUp(result) => {
             if let Err(error) = result {
@@ -211,8 +231,7 @@ fn view_content(model: &Model) -> Node<Msg> {
                         p!["Please create your profile!"]
                     }
                 }
-                Page::UserProfile(mdl) =>
-                    page::user_profile::view(mdl).map_msg(Msg::UserProfile),
+                Page::UserProfile(mdl) => page::user_profile::view(mdl).map_msg(Msg::UserProfile),
                 Page::NotFound => page::not_found::view(),
             },
         ]
@@ -240,7 +259,7 @@ fn view_brand_and_hamburger(menu_visible: bool, base_url: &Url) -> Node<Msg> {
         a![
             C!["navbar-item", "has-text-weight-bold", "is-size-3"],
             attrs! {At::Href => Urls::new(base_url).home()},
-            "SEPAMA"
+            "SEPAMA - FOR DEMO PURPOSE ONLY!"
         ],
         // ------ Hamburger ------
         a![
@@ -367,15 +386,12 @@ impl<'a> Urls<'a> {
         self.base_url()
     }
     fn sepa_management(self) -> Url {
-        self.base_url().add_path_part(SEPA_MANAGEMENT)
+        Url::new().add_hash_path_part(SEPA_MANAGEMENT)
     }
     fn user_profile(self) -> Url {
-        self.base_url().add_path_part(USER_PROFILE)
+        Url::new().add_hash_path_part(USER_PROFILE)
     }
 }
-
-
-
 
 // ------ ------
 //     Start
