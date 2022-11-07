@@ -17,9 +17,9 @@ services:
     volumes:
       - 'sepama_postgresql_data:/var/lib/postgresql/data'
 
-  backend:
+  sepama_backend:
    image: ljufa/sepama-backend:latest
-   container_name: backend
+   container_name: sepama_backend
    restart: unless-stopped
    depends_on: 
       - postgres
@@ -34,10 +34,10 @@ services:
     - "8080"
    labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.backend.rule=Host(`sepama.freemyip.com`)"
-      - "traefik.http.routers.backend.entrypoints=websecure"
-      - "traefik.http.routers.backend.tls.certresolver=sepadnschallenge"
-      - "traefik.http.services.backend.loadbalancer.server.port=8080"
+      - "traefik.http.routers.sepama_backend.rule=Host(`sepama.freemyip.com`)"
+      - "traefik.http.routers.sepama_backend.entrypoints=websecure"
+      - "traefik.http.routers.sepama_backend.tls.certresolver=sepadnschallenge"
+      - "traefik.http.services.sepama_backend.loadbalancer.server.port=8080"
 
 networks: 
   default: 
