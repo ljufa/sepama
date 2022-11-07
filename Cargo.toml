@@ -1,3 +1,2 @@
 [workspace]
 members = ["api_models", "entity", "migration", "backend","web_ui"]
-# exclude = ["deployment"]
