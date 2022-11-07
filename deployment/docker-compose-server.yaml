@@ -3,19 +3,19 @@ services:
 
   postgres:
     image: postgres:latest
-    container_name: postgres
+    container_name: sepama-postgres
     restart: unless-stopped
     expose:
       - "5432"
-    ports:
-      - "127.0.0.1:5432:5432"
+    # ports:
+    #   - "127.0.0.1:5432:5432"
     environment:
       - POSTGRES_PASSWORD=sepa
       - POSTGRES_USER=sepa
       - POSTGRES_DB=sepa
       - PGDATA=/var/lib/postgresql/data/pgdata
     volumes:
-      - 'postgresql_data:/var/lib/postgresql/data'
+      - 'sepama_postgresql_data:/var/lib/postgresql/data'
 
   backend:
    image: ljufa/sepama-backend:latest
@@ -26,7 +26,7 @@ services:
    environment:
       - SERVER_BIND_ADDRESS=0.0.0.0:8080
       - AUTHORITY=https://dev-jecc6018.us.auth0.com/
-      - DATABASE_URL=postgres://sepa:sepa@postgres/sepa
+      - DATABASE_URL=postgres://sepa:sepa@sepama-postgres/sepa
       - ALLOWED_ORIGIN=https://sepama.freemyip.com
       - STATIC_FILES_DIR=/opt/sepama
       - RUST_LOG=debug
@@ -44,5 +44,5 @@ networks:
     external: 
       name: proxy
 volumes:
-  postgresql_data:
+  sepama_postgresql_data:
     driver: local

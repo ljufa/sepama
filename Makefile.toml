@@ -67,7 +67,14 @@ args = [
 [tasks.re_create_containers]
 description = "Re-create docker containers with `latest` images using docker-compose"
 command = "docker-compose"
-args = ["-f", "deployment/docker-compose-server.yaml", "up", "-d"]
+args = [
+    "-f",
+    "deployment/docker-compose-server.yaml",
+    "-p",
+    "sepama",
+    "up",
+    "-d",
+]
 
 [tasks.redeploy]
 dependencies = [
